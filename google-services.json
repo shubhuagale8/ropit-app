@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "56557509593",
+    "project_id": "ropit-e8466",
+    "storage_bucket": "ropit-e8466.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56557509593:android:227c8e65cccc165839d7c8",
+        "android_client_info": {
+          "package_name": "com.ropit.nursery"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcZ3EOw-ggF-h9IvGlb5NzpxKhW0TuHAw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

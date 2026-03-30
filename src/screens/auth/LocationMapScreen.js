@@ -18,8 +18,10 @@ const DEFAULT_REGION = {
 };
 
 export default function LocationMapScreen({ route, navigation }) {
-  const { nurseryName = "", ownerName = "", phoneNumber = "" } = route.params || {};
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, pendingInfo } = useAuth();
+  const nurseryName  = pendingInfo?.nurseryName  || route.params?.nurseryName  || "";
+  const ownerName    = pendingInfo?.ownerName    || route.params?.ownerName    || "";
+  const phoneNumber  = pendingInfo?.phoneNumber  || route.params?.phoneNumber  || "";
   const mapRef = useRef(null);
 
   const [region, setRegion]           = useState(DEFAULT_REGION);
@@ -130,8 +132,8 @@ export default function LocationMapScreen({ route, navigation }) {
         city,
       });
 
+      // refreshProfile updates context → AppNavigator sees profile is now set → switches to Main automatically
       await refreshProfile();
-      navigation.replace("Main");
     } catch (e) {
       console.log("Save error:", e.message);
       Alert.alert("Save Failed", "Could not save data. Please check internet and try again.\n\n" + e.message);

@@ -4,12 +4,14 @@ import {
   KeyboardAvoidingView, Platform, ActivityIndicator, Alert, StatusBar,
 } from "react-native";
 import { sendOTP, verifyOTP } from "../../config/firebase";
+import { useAuth } from "../../context/AuthContext";
 import { colors, spacing, radius } from "../../theme";
 
 const OTP_LENGTH = 6;
 
 export default function OTPVerifyScreen({ route, navigation }) {
   const { phoneNumber, nurseryName, ownerName } = route.params;
+  const { setPendingInfo } = useAuth();
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(true);
@@ -63,9 +65,14 @@ export default function OTPVerifyScreen({ route, navigation }) {
     if (!confirmRef) return Alert.alert("Error", "OTP not sent yet. Please wait.");
     setLoading(true);
     try {
+      // Save nursery info to context BEFORE verifying — once Firebase auth fires,
+      // the navigator will switch to SetupStack and LocationMap needs this data.
+      setPendingInfo({ nurseryName, ownerName, phoneNumber });
       await verifyOTP(confirmRef, otpCode);
-      navigation.replace("LocationMap", { nurseryName, ownerName, phoneNumber });
+      // Navigator will automatically show LocationMap via SetupStack
+      // once onAuthStateChanged fires and profile is found to be null.
     } catch (e) {
+      setPendingInfo(null); // clear on failure
       Alert.alert("Wrong OTP", "Invalid OTP. Please try again.");
       setOtp(Array(OTP_LENGTH).fill(""));
       inputs.current[0]?.focus();

@@ -70,15 +70,24 @@ function MainStack() {
 function AuthStack() {
   return (
     <Auth.Navigator screenOptions={{ headerShown: false }}>
-      <Auth.Screen name="BasicInfo"   component={BasicInfoScreen} />
-      <Auth.Screen name="OTPVerify"   component={OTPVerifyScreen} />
+      <Auth.Screen name="BasicInfo" component={BasicInfoScreen} />
+      <Auth.Screen name="OTPVerify" component={OTPVerifyScreen} />
+    </Auth.Navigator>
+  );
+}
+
+// Shown after OTP succeeds but before nursery profile is saved
+// route.params from OTPVerifyScreen are passed via NavigationContainer initialParams
+function SetupStack() {
+  return (
+    <Auth.Navigator screenOptions={{ headerShown: false }}>
       <Auth.Screen name="LocationMap" component={LocationMapScreen} />
     </Auth.Navigator>
   );
 }
 
 export default function AppNavigator() {
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
 
   if (loading) {
     return (
@@ -90,19 +99,18 @@ export default function AppNavigator() {
     );
   }
 
+  // Decide which stack to show:
+  // 1. No user            → Auth stack (BasicInfo → OTP)
+  // 2. User + no profile  → Setup stack (LocationMap only — profile save will refresh context)
+  // 3. User + profile     → Main app
+  const stack = !user ? "Auth" : !profile ? "Setup" : "Main";
+
   return (
     <NavigationContainer>
-      {/*
-        We always register both "Main" and "Auth" as root screens.
-        This ensures navigation.replace("Main") and navigation.replace("Auth")
-        always work from any screen including LocationMap.
-      */}
       <Root.Navigator screenOptions={{ headerShown: false }}>
-        {user ? (
-          <Root.Screen name="Main" component={MainStack} />
-        ) : (
-          <Root.Screen name="Auth" component={AuthStack} />
-        )}
+        {stack === "Main"  && <Root.Screen name="Main"  component={MainStack} />}
+        {stack === "Auth"  && <Root.Screen name="Auth"  component={AuthStack} />}
+        {stack === "Setup" && <Root.Screen name="Setup" component={SetupStack} />}
       </Root.Navigator>
     </NavigationContainer>
   );

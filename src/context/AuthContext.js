@@ -5,12 +5,17 @@ import { getNurseryProfile } from "../config/firebase";
 const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
-  const [user, setUser]       = useState(undefined); // undefined means still loading
-  const [profile, setProfile] = useState(null);
+  const [user, setUser]                     = useState(undefined); // undefined = still loading
+  const [profile, setProfile]               = useState(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+  // Temporarily holds nursery info collected before OTP so LocationMap can access it
+  const [pendingInfo, setPendingInfo]       = useState(null);
 
   useEffect(() => {
     const unsub = auth().onAuthStateChanged(async (firebaseUser) => {
       setUser(firebaseUser || null);
+      setProfileLoading(true);
+
       if (firebaseUser) {
         try {
           const p = await getNurseryProfile(firebaseUser.uid);
@@ -21,7 +26,10 @@ export function AuthProvider({ children }) {
         }
       } else {
         setProfile(null);
+        setPendingInfo(null); // clear on logout
       }
+
+      setProfileLoading(false);
     });
     return unsub;
   }, []);
@@ -40,8 +48,12 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{
       user,
       profile,
-      loading: user === undefined,
+      // loading stays true until BOTH auth state AND profile fetch are done
+      loading: user === undefined || profileLoading,
+      profileLoading,
       refreshProfile,
+      pendingInfo,
+      setPendingInfo,
     }}>
       {children}
     </AuthContext.Provider>

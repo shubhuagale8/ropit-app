@@ -34,12 +34,6 @@ export default function ProfileScreen() {
     { icon: "📞", label: "Phone",        labelHi: "फोन नंबर",        value: user?.phoneNumber    || profile?.phoneNumber || "—" },
     { icon: "📍", label: "Address",      labelHi: "पत्ता",            value: profile?.address     || "Not set" },
     { icon: "🏙️", label: "City",         labelHi: "शहर",             value: profile?.city        || "Not set" },
-    {
-      icon: "🗺️", label: "Coordinates",  labelHi: "स्थान",
-      value: profile?.latitude
-        ? `${parseFloat(profile.latitude).toFixed(5)}, ${parseFloat(profile.longitude).toFixed(5)}`
-        : "Not set"
-    },
   ];
 
   return (
@@ -72,25 +66,6 @@ export default function ProfileScreen() {
             </View>
           ))}
         </View>
-
-        {/* Location status */}
-        {profile?.latitude ? (
-          <View style={styles.locationCard}>
-            <Text style={{ fontSize: 22 }}>✅</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.locationTitle}>Location saved in database</Text>
-              <Text style={styles.locationSubtitle}>Farmers can find your nursery on the map</Text>
-            </View>
-          </View>
-        ) : (
-          <View style={[styles.locationCard, { backgroundColor: colors.redLight, borderColor: "#ffcccc" }]}>
-            <Text style={{ fontSize: 22 }}>⚠️</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.locationTitle, { color: colors.red }]}>Location not set</Text>
-              <Text style={styles.locationSubtitle}>Farmers cannot find your nursery yet</Text>
-            </View>
-          </View>
-        )}
 
         {/* About */}
         <View style={styles.card}>
@@ -149,15 +124,6 @@ const styles = StyleSheet.create({
   rowLabelHi: { color: colors.textMuted, fontWeight: "400" },
   rowValue:   { fontSize: 14, fontWeight: "600", color: colors.text, marginTop: 2 },
 
-  locationCard: {
-    flexDirection: "row", gap: 12, alignItems: "center",
-    backgroundColor: colors.greenPale, borderRadius: 14,
-    padding: 14, marginBottom: 14,
-    borderWidth: 1, borderColor: colors.greenMid,
-  },
-  locationTitle:    { fontWeight: "700", fontSize: 14, color: colors.text },
-  locationSubtitle: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
-
   aboutTitle: { fontWeight: "700", fontSize: 14, color: colors.text, marginBottom: 6 },
   aboutText:  { fontSize: 13, color: colors.textMuted, lineHeight: 20 },
   version:    { fontSize: 11, color: colors.textMuted, marginTop: 8 },
@@ -169,3 +135,4 @@ const styles = StyleSheet.create({
   },
   signOutText: { color: colors.red, fontWeight: "700", fontSize: 15 },
 });
+    
